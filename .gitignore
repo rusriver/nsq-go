@@ -31,3 +31,5 @@ _testmain.go
 nsq-to-nsq
 nsq-to-http
 nsqlookup-proxy
+
+.idea/
