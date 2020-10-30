@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"time"
 
-	nsq "github.com/segmentio/nsq-go"
+	nsq "github.com/xenking/nsq-go"
 )
 
 const (

@@ -1,7 +1,7 @@
 version: 2
 jobs:
   test:
-    working_directory: /go/src/github.com/segmentio/nsq-go
+    working_directory: /go/src/github.com/xenking/nsq-go
     docker:
       - image: segment/circleci-golang:1.11.0
         environment:
@@ -55,7 +55,7 @@ jobs:
       - run: go test -v -race ./...
 
   build:
-    working_directory: /go/src/github.com/segmentio/nsq-go
+    working_directory: /go/src/github.com/xenking/nsq-go
     docker:
       - image: segment/circleci-golang:1.11.0
         environment:

@@ -1,4 +1,4 @@
-module github.com/segmentio/nsq-go
+module github.com/xenking/nsq-go
 
 go 1.11
 

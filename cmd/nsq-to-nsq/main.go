@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/segmentio/conf"
-	nsq "github.com/segmentio/nsq-go"
+	nsq "github.com/xenking/nsq-go"
 )
 
 func main() {

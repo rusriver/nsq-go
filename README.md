@@ -1,4 +1,4 @@
-nsq-go [![CircleCI](https://circleci.com/gh/segmentio/nsq-go.svg?style=shield)](https://circleci.com/gh/segmentio/nsq-go) [![Go Report Card](https://goreportcard.com/badge/github.com/segmentio/nsq-go)](https://goreportcard.com/report/github.com/segmentio/nsq-go) [![GoDoc](https://godoc.org/github.com/segmentio/nsq-go?status.svg)](https://godoc.org/github.com/segmentio/nsq-go)
+nsq-go [![CircleCI](https://circleci.com/gh/segmentio/nsq-go.svg?style=shield)](https://circleci.com/gh/segmentio/nsq-go) [![Go Report Card](https://goreportcard.com/badge/github.com/xenking/nsq-go)](https://goreportcard.com/report/github.com/xenking/nsq-go) [![GoDoc](https://godoc.org/github.com/xenking/nsq-go?status.svg)](https://godoc.org/github.com/xenking/nsq-go)
 ======
 
 Go package providing tools for building NSQ clients, servers and middleware.
@@ -24,7 +24,7 @@ Consumer
 package main
 
 import (
-    "github.com/segmentio/nsq-go"
+    "github.com/xenking/nsq-go"
 )
 
 func main() {
@@ -59,7 +59,7 @@ Producer
 package main
 
 import (
-    "github.com/segmentio/nsq-go"
+    "github.com/xenking/nsq-go"
 )
 
 func main() {
