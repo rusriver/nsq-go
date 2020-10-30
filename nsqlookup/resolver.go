@@ -2,7 +2,7 @@ package nsqlookup
 
 import (
 	"context"
-	"encoding/json"
+	"github.com/segmentio/encoding/json"
 	"fmt"
 	"net"
 	"net/http"

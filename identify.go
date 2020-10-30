@@ -3,7 +3,7 @@ package nsq
 import (
 	"bufio"
 	"encoding/binary"
-	"encoding/json"
+	"github.com/segmentio/encoding/json"
 	"io"
 	"os"
 	"time"

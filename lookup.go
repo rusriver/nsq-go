@@ -2,7 +2,7 @@ package nsq
 
 import (
 	"bytes"
-	"encoding/json"
+	"github.com/segmentio/encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"

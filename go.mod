@@ -5,6 +5,7 @@ go 1.11
 require (
 	github.com/pkg/errors v0.8.0
 	github.com/segmentio/conf v1.0.0
+	github.com/segmentio/encoding v0.2.2
 	github.com/segmentio/events v2.1.0+incompatible
 	github.com/segmentio/go-snakecase v1.0.0 // indirect
 	github.com/segmentio/objconv v1.0.1 // indirect

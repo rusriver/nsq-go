@@ -3,7 +3,7 @@ package nsqlookup
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"github.com/segmentio/encoding/json"
 	"errors"
 	"io"
 	"log"
