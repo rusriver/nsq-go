@@ -3,12 +3,12 @@ package nsq
 import (
 	"bufio"
 	"encoding/binary"
-	"github.com/segmentio/encoding/json"
 	"io"
 	"os"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/segmentio/encoding/json"
 )
 
 // Identify represents the IDENTIFY command.
@@ -30,30 +30,40 @@ type Identify struct {
 	MessageTimeout time.Duration
 }
 
+type IdentityResponse struct {
+	MaxRdyCount  int  `json:"max_rdy_count"`
+	AuthRequired bool `json:"auth_required"`
+}
+
 type identifyBody struct {
 	ClientID       string `json:"client_id,omitempty"`
 	Hostname       string `json:"hostname,omitempty"`
 	UserAgent      string `json:"user_agent,omitempty"`
 	MessageTimeout int    `json:"msg_timeout,omitempty"`
+	Negotiation    bool   `json:"feature_negotiation,omitempty"`
 }
+
+const CommandIdentify = "IDENTIFY"
 
 // Name returns the name of the command in order to satisfy the Command
 // interface.
 func (c Identify) Name() string {
-	return "IDENTIFY"
+	return CommandIdentify
 }
 
 // Write serializes the command to the given buffered output, satisfies the
 // Command interface.
 func (c Identify) Write(w *bufio.Writer) (err error) {
 	var data []byte
-
-	if data, err = json.Marshal(identifyBody{
+	body := identifyBody{
 		ClientID:       c.ClientID,
 		Hostname:       c.Hostname,
 		UserAgent:      c.UserAgent,
 		MessageTimeout: int(c.MessageTimeout / time.Millisecond),
-	}); err != nil {
+		Negotiation:    true,
+	}
+
+	if data, err = json.Marshal(body); err != nil {
 		return
 	}
 
@@ -89,6 +99,29 @@ func readIdentify(r *bufio.Reader) (cmd Identify, err error) {
 		MessageTimeout: time.Millisecond * time.Duration(body.MessageTimeout),
 	}
 	return
+}
+
+func readIdentityResponse(conn *Conn) (IdentityResponse, error) {
+	var ir IdentityResponse
+
+	frame, err := conn.ReadFrame()
+	if err != nil {
+		return ir, err
+	}
+	resp, ok := frame.(Response)
+	if !ok {
+		return ir, errors.New("invalid identify response")
+	}
+
+	switch resp {
+	case OK:
+		return ir, nil
+	default:
+		if err := json.Unmarshal([]byte(resp), &ir); err != nil {
+			return ir, err
+		}
+	}
+	return ir, nil
 }
 
 func readIdentifyBody(r *bufio.Reader) (body identifyBody, err error) {

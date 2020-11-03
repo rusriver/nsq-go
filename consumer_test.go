@@ -2,6 +2,7 @@ package nsq
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"testing"
 	"time"
@@ -161,7 +162,7 @@ func TestDrainAndRequeueOnStop(t *testing.T) {
 		DialTimeout:  time.Second * 60,
 		ReadTimeout:  time.Second * 60,
 		WriteTimeout: time.Second * 60,
-		MaxInFlight: 10,
+		MaxInFlight:  10,
 	})
 
 	if err != nil {
@@ -203,7 +204,7 @@ func TestDrainAndRequeueOnStop(t *testing.T) {
 		DialTimeout:  time.Second * 60,
 		ReadTimeout:  time.Second * 60,
 		WriteTimeout: time.Second * 60,
-		MaxInFlight: 100,
+		MaxInFlight:  100,
 	})
 
 	deadline = time.NewTimer(10 * time.Second)

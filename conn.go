@@ -34,20 +34,40 @@ type Conn struct {
 	wbuf *bufio.Writer
 }
 
+const connBufSize = 4096
+
 func NewConn(conn net.Conn) *Conn {
-	const bufSize = 4096
 	return &Conn{
 		conn: conn,
-		rbuf: bufio.NewReaderSize(conn, bufSize),
-		wbuf: bufio.NewWriterSize(conn, bufSize),
+		rbuf: bufio.NewReaderSize(conn, connBufSize),
+		wbuf: bufio.NewWriterSize(conn, connBufSize),
 	}
 }
 
-func Dial(addr string) (c *Conn, err error) {
-	return DialTimeout(addr, DefaultDialTimeout)
+func Dial(addr string, identify Identify) (c *Conn, err error) {
+	return DialTimeout(addr, DefaultDialTimeout, identify)
 }
 
-func DialTimeout(addr string, timeout time.Duration) (c *Conn, err error) {
+func DialTimeout(addr string, timeout time.Duration, identify Identify) (*Conn, error) {
+	conn, err := dialTimeout(addr, timeout)
+	if err != nil {
+		return nil, err
+	}
+	err = conn.WriteCommand(identify)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := readIdentityResponse(conn)
+	if err != nil {
+		return nil, err
+	}
+	if resp.TLS {
+		conn, err = upgradeTLS(conn, addr, identify.TLSConfig)
+	}
+	return conn, nil
+}
+
+func dialTimeout(addr string, timeout time.Duration) (c *Conn, err error) {
 	var conn net.Conn
 	var now = time.Now()
 	var end = now.Add(timeout)

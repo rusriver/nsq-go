@@ -45,7 +45,7 @@ func ReadCommand(r *bufio.Reader) (cmd Command, err error) {
 		line = line[:n-1]
 	}
 
-	if line == "IDENTIFY" {
+	if line == CommandIdentify {
 		return readIdentify(r)
 	}
 

@@ -15,6 +15,7 @@ type ProducerConfig struct {
 	Address        string
 	Topic          string
 	MaxConcurrency int
+	Identify       Identify
 	DialTimeout    time.Duration
 	ReadTimeout    time.Duration
 	WriteTimeout   time.Duration
@@ -56,6 +57,7 @@ type Producer struct {
 	// Immutable state of the producer.
 	address      string
 	topic        string
+	identify     Identify
 	dialTimeout  time.Duration
 	readTimeout  time.Duration
 	writeTimeout time.Duration
@@ -221,12 +223,12 @@ func (p *Producer) run() {
 		}
 	}
 
-	connect := func() (err error) {
+	connect := func() error {
+		var err error
 		log.Printf("opening nsqd connection to %s", p.address)
-
-		if conn, err = DialTimeout(p.address, p.dialTimeout); err != nil {
+		if conn, err = DialTimeout(p.address, p.dialTimeout, p.identify); err != nil {
 			log.Printf("failed to connect to nsqd at %s: %s", p.address, err)
-			return
+			return err
 		}
 
 		reqChan = p.reqs
@@ -234,7 +236,7 @@ func (p *Producer) run() {
 		go p.flush(conn, resChan)
 
 		atomic.StoreUint32(&p.ok, 1)
-		return
+		return nil
 	}
 
 	defer p.join.Done()

@@ -249,12 +249,12 @@ func (c *Consumer) run() {
 }
 
 func (c *Consumer) await(wg *sync.WaitGroup, duration time.Duration) bool {
-		waitChan := make(chan struct{})
-		go func() {
+	waitChan := make(chan struct{})
+	go func() {
 		defer close(waitChan)
 		wg.Wait()
 	}()
-		select {
+	select {
 	case <-waitChan:
 		return true // completed normally
 	case <-time.After(duration):
@@ -352,7 +352,7 @@ func (c *Consumer) closeConn(addr string) {
 }
 
 func (c *Consumer) getConn(addr string) (*Conn, error) {
-	conn, err := DialTimeout(addr, c.dialTimeout)
+	conn, err := DialTimeout(addr, c.dialTimeout, c.identify)
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +365,6 @@ func (c *Consumer) runConn(conn *Conn, addr string, cmdChan chan Command) {
 	defer c.join.Done()
 	var rdy int
 
-	sendCommand(cmdChan, c.identify)
 	sendCommand(cmdChan, Sub{Topic: c.topic, Channel: c.channel})
 
 	for {
