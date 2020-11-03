@@ -30,6 +30,11 @@ type Identify struct {
 	TLSV1     bool
 	TLSConfig *tls.Config
 
+	// Compression Settings
+	Deflate      bool
+	DeflateLevel int
+	Snappy       bool
+
 	// MessageTimeout can bet set to configure the server-side message timeout
 	// for messages delivered to this consumer.  By default it is not sent to
 	// the server.
@@ -39,6 +44,8 @@ type Identify struct {
 type IdentityResponse struct {
 	MaxRdyCount  int  `json:"max_rdy_count"`
 	TLS          bool `json:"tls_v1"`
+	Deflate      bool `json:"deflate"`
+	Snappy       bool `json:"snappy"`
 	AuthRequired bool `json:"auth_required"`
 }
 
@@ -47,7 +54,10 @@ type identifyBody struct {
 	Hostname       string `json:"hostname,omitempty"`
 	UserAgent      string `json:"user_agent,omitempty"`
 	MessageTimeout int    `json:"msg_timeout,omitempty"`
+	DeflateLevel   int    `json:"deflate_level,omitempty"`
 	TLSV1          bool   `json:"tls_v1,omitempty"`
+	Deflate        bool   `json:"deflate,omitempty"`
+	Snappy         bool   `json:"snappy,omitempty"`
 	Negotiation    bool   `json:"feature_negotiation,omitempty"`
 }
 
@@ -70,6 +80,9 @@ func (c Identify) Write(w *bufio.Writer) (err error) {
 		MessageTimeout: int(c.MessageTimeout / time.Millisecond),
 		Negotiation:    true,
 		TLSV1:          c.TLSV1,
+		Deflate:        c.Deflate,
+		DeflateLevel:   c.DeflateLevel,
+		Snappy:         c.Snappy,
 	}
 
 	if data, err = json.Marshal(body); err != nil {
@@ -170,5 +183,10 @@ func setIdentifyDefaults(c Identify, conf *tls.Config) Identify {
 		c.TLSConfig = conf
 	}
 
+	if c.Deflate {
+		if c.DeflateLevel < 1 {
+			c.DeflateLevel = 6 // min 1, max 9, default 6
+		}
+	}
 	return c
 }

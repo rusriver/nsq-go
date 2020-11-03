@@ -64,6 +64,12 @@ func DialTimeout(addr string, timeout time.Duration, identify Identify) (*Conn, 
 	if resp.TLS {
 		conn, err = upgradeTLS(conn, addr, identify.TLSConfig)
 	}
+	if resp.Deflate {
+		conn, err = upgradeDeflate(conn, identify.DeflateLevel)
+	}
+	if resp.Snappy {
+		conn, err = upgradeSnappy(conn)
+	}
 	return conn, nil
 }
 
