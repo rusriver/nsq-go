@@ -16,6 +16,7 @@ type ProducerConfig struct {
 	Topic          string
 	MaxConcurrency int
 	Identify       Identify
+	TLS            TLSConfig
 	DialTimeout    time.Duration
 	ReadTimeout    time.Duration
 	WriteTimeout   time.Duration
@@ -76,11 +77,13 @@ type ProducerRequest struct {
 func NewProducer(config ProducerConfig) (p *Producer, err error) {
 	config.defaults()
 
+	tlsConf, err := NewTLSConfig(config.TLS)
 	p = &Producer{
 		reqs:         make(chan ProducerRequest, config.MaxConcurrency),
 		done:         make(chan struct{}),
 		address:      config.Address,
 		topic:        config.Topic,
+		identify:     setIdentifyDefaults(config.Identify, tlsConf),
 		dialTimeout:  config.DialTimeout,
 		readTimeout:  config.ReadTimeout,
 		writeTimeout: config.WriteTimeout,

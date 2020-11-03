@@ -2,6 +2,7 @@ package nsq
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/binary"
 	"io"
 	"os"
@@ -24,6 +25,11 @@ type Identify struct {
 	// nsq.DefaultUserAgent.
 	UserAgent string
 
+	// TLSV1 can be set to configure the secure tcp with TLSV1, by default it is set to
+	// false.
+	TLSV1     bool
+	TLSConfig *tls.Config
+
 	// MessageTimeout can bet set to configure the server-side message timeout
 	// for messages delivered to this consumer.  By default it is not sent to
 	// the server.
@@ -32,6 +38,7 @@ type Identify struct {
 
 type IdentityResponse struct {
 	MaxRdyCount  int  `json:"max_rdy_count"`
+	TLS          bool `json:"tls_v1"`
 	AuthRequired bool `json:"auth_required"`
 }
 
@@ -40,6 +47,7 @@ type identifyBody struct {
 	Hostname       string `json:"hostname,omitempty"`
 	UserAgent      string `json:"user_agent,omitempty"`
 	MessageTimeout int    `json:"msg_timeout,omitempty"`
+	TLSV1          bool   `json:"tls_v1,omitempty"`
 	Negotiation    bool   `json:"feature_negotiation,omitempty"`
 }
 
@@ -61,6 +69,7 @@ func (c Identify) Write(w *bufio.Writer) (err error) {
 		UserAgent:      c.UserAgent,
 		MessageTimeout: int(c.MessageTimeout / time.Millisecond),
 		Negotiation:    true,
+		TLSV1:          c.TLSV1,
 	}
 
 	if data, err = json.Marshal(body); err != nil {
@@ -96,6 +105,7 @@ func readIdentify(r *bufio.Reader) (cmd Identify, err error) {
 		ClientID:       body.ClientID,
 		Hostname:       body.Hostname,
 		UserAgent:      body.UserAgent,
+		TLSV1:          body.TLSV1,
 		MessageTimeout: time.Millisecond * time.Duration(body.MessageTimeout),
 	}
 	return
@@ -148,13 +158,16 @@ func readIdentifyBody(r *bufio.Reader) (body identifyBody, err error) {
 	return
 }
 
-func setIdentifyDefaults(c Identify) Identify {
+func setIdentifyDefaults(c Identify, conf *tls.Config) Identify {
 	if len(c.UserAgent) == 0 {
 		c.UserAgent = DefaultUserAgent
 	}
 
 	if len(c.Hostname) == 0 {
 		c.Hostname, _ = os.Hostname()
+	}
+	if conf != nil {
+		c.TLSConfig = conf
 	}
 
 	return c

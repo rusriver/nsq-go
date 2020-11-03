@@ -46,6 +46,7 @@ type ConsumerConfig struct {
 	Lookup       []string
 	MaxInFlight  int
 	Identify     Identify
+	TLS          TLSConfig
 	DialTimeout  time.Duration
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
@@ -102,6 +103,8 @@ func NewConsumer(config ConsumerConfig) (c *Consumer, err error) {
 
 	config.defaults()
 
+	tlsConf, err := NewTLSConfig(config.TLS)
+
 	c = &Consumer{
 		msgs: make(chan Message, config.MaxInFlight),
 		done: make(chan struct{}),
@@ -111,7 +114,7 @@ func NewConsumer(config ConsumerConfig) (c *Consumer, err error) {
 		address:      config.Address,
 		lookup:       append([]string{}, config.Lookup...),
 		maxInFlight:  config.MaxInFlight,
-		identify:     setIdentifyDefaults(config.Identify),
+		identify:     setIdentifyDefaults(config.Identify, tlsConf),
 		dialTimeout:  config.DialTimeout,
 		readTimeout:  config.ReadTimeout,
 		writeTimeout: config.WriteTimeout,
