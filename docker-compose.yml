@@ -1,16 +1,16 @@
-version: '2'
+version: '3.7'
 
-# Use this docker-compose file to setup the test environment before running the
+# Use this docker-compose file to setup the test environment before running the tests.
 # tests.
 services:
   consul:
-    image: consul:latest
+    image: bitnami/consul:latest
     command: agent -server -dev -log-level debug -client 0.0.0.0
     ports:
       - 8500:8500
 
   nsqlookupd-1:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqlookupd
       -broadcast-address localhost:4160
@@ -19,7 +19,7 @@ services:
       - 4161:4161
 
   nsqlookupd-2:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqlookupd
       -broadcast-address localhost:4162
@@ -28,7 +28,7 @@ services:
       - 4163:4161
 
   nsqlookupd-3:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqlookupd
       -broadcast-address localhost:4164
@@ -37,7 +37,7 @@ services:
       - 4165:4161
 
   nsqd-1:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqd
       -broadcast-address localhost:4150
@@ -53,7 +53,7 @@ services:
       - nsqlookupd-3
 
   nsqd-2:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqd
       -broadcast-address localhost:4152
@@ -69,7 +69,7 @@ services:
       - nsqlookupd-3
 
   nsqd-3:
-    image: nsqio/nsq:v0.3.8
+    image: nsqio/nsq:latest
     command: >
       /nsqd
       -broadcast-address localhost:4154
