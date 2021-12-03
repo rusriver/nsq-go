@@ -1,4 +1,4 @@
-module github.com/xenking/nsq-go
+module github.com/rusriver/nsq-go
 
 go 1.15
 
